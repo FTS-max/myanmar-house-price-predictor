@@ -4,13 +4,14 @@ import multer from 'multer'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import authModule from '../middlewares/auth.js';
+import removeOldTokens from '../middlewares/tokenRemove.js'
 
 const { auth, isOwner } = authModule;
 
 const router = express.Router()
 const upload = multer()
 
-router.get("/users", async (req, res) => {
+router.get("/users", async(req, res) => {
     try {
         const data = await prisma.user.findMany({
             include: {
@@ -31,7 +32,7 @@ router.get("/users", async (req, res) => {
     }
 })
 
-router.get("/users/:id", async (req, res) => {
+router.get("/users/:id", async(req, res) => {
     try {
         const { id } = req.params
         const data = await prisma.user.findFirst({
@@ -52,7 +53,7 @@ router.get("/users/:id", async (req, res) => {
     }
 })
 
-router.get("/search", async (req, res) => {
+router.get("/search", async(req, res) => {
     const { q } = req.params;
 
     const data = await prisma.user.findMany({
@@ -71,7 +72,7 @@ router.get("/search", async (req, res) => {
     res.json(data)
 })
 
-router.post("/users/create", upload.none(), async (req, res) => {
+router.post("/users", upload.none(), async(req, res) => {
     try {
         const { name, username, bio, password } = req.body;
 
@@ -99,7 +100,7 @@ router.post("/users/create", upload.none(), async (req, res) => {
     }
 });
 
-router.post("/login", upload.none(), async (req, res) => {
+router.post("/login", upload.none(), async(req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -128,7 +129,7 @@ router.post("/login", upload.none(), async (req, res) => {
     res.status(401).json({ msg: "incorrect username and password" })
 })
 
-router.post("/follow/:id", auth, async (req, res) => {
+router.post("/follow/:id", auth, async(req, res) => {
     const user = res.locals.user;
     const { id } = req.params;
 
@@ -141,7 +142,7 @@ router.post("/follow/:id", auth, async (req, res) => {
     res.json(data);
 })
 
-router.delete("/unfollow/:id", auth, async (req, res) => {
+router.delete("/unfollow/:id", auth, async(req, res) => {
     const user = res.locals.user;
     const { id } = req.params;
 
@@ -155,7 +156,7 @@ router.delete("/unfollow/:id", auth, async (req, res) => {
     res.json({ msg: `Unfollow user ${id}` });
 })
 
-router.post("/friends/:id", upload.none(), auth, async (req, res) => {
+router.post("/friends/:id", upload.none(), auth, async(req, res) => {
     const user = res.locals.user;
     const { id } = req.params;
     const { statusId } = req.body;
@@ -171,7 +172,7 @@ router.post("/friends/:id", upload.none(), auth, async (req, res) => {
     res.json(friends);
 })
 
-router.delete("/unfriends/:id", auth, async (req, res) => {
+router.delete("/unfriends/:id", auth, async(req, res) => {
     const user = res.locals.user;
     const { id } = req.params;
     const { statusId } = req.body;
@@ -187,7 +188,17 @@ router.delete("/unfriends/:id", auth, async (req, res) => {
     })
 })
 
-router.get("/verify", auth, async (req, res) => {
+router.post('/cleanup-tokens', upload.none(), async(req, res) => {
+    try {
+        await removeOldTokens();
+        res.json({ msg: 'Old tokens removed successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.get("/verify", auth, async(req, res) => {
     const user = res.locals.user;
     res.json(user)
 })

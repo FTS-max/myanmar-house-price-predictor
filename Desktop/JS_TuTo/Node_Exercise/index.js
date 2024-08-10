@@ -14,7 +14,7 @@ app.listen(8000, (req, res) => {
     console.log("Your API is listening at port 8000")
 })
 
-const gracefulShutdown = async() => {
+const gracefulShutdown = async () => {
     await prisma.$disconnect();
     server.close(() => {
         console.log("Your API is closed")

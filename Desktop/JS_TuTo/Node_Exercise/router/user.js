@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken'
 import authModule from '../middlewares/auth.js';
 import removeOldTokens from '../middlewares/tokenRemove.js'
 
-const { auth, isOwner } = authModule;
+const { auth } = authModule;
 
 const router = express.Router()
 const upload = multer()
@@ -28,7 +28,7 @@ router.get("/users", async(req, res) => {
         })
         res.json(data)
     } catch (e) {
-        res.statusCode(500).json({ error: e })
+        res.status(500).json({ error: e })
     }
 })
 
@@ -49,7 +49,7 @@ router.get("/users/:id", async(req, res) => {
         })
         res.json(data)
     } catch (e) {
-        res.statusCode(500).json({ error: e })
+        res.status(500).json({ error: e })
     }
 })
 
@@ -90,7 +90,7 @@ router.post("/users", upload.none(), async(req, res) => {
             }
         });
 
-        return res.json(user); // Ensure you use return to prevent further code execution
+        return res.json(user);
     } catch (e) {
         // Log the error for debugging purposes
         console.error(e);
@@ -127,7 +127,25 @@ router.post("/login", upload.none(), async(req, res) => {
     }
 
     res.status(401).json({ msg: "incorrect username and password" })
-})
+});
+
+router.post("/logout", auth, async(req, res) => {
+    try {
+        const user = res.locals.user;
+
+        await prisma.token.deleteMany({
+            where: {
+                userId: Number(user.id)
+            }
+        });
+
+        res.json({ msg: 'Logged out successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 router.post("/follow/:id", auth, async(req, res) => {
     const user = res.locals.user;

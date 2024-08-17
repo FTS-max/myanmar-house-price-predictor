@@ -21,6 +21,7 @@ model User {
   Token    Token[]
   postlikes     PostLike[]
   commentlikes  CommentLike[]
+  notis    Noti[]
   friends     Friend[]  @relation("UserFriends")
   friendUsers Friend[]  @relation("FriendUsers")
   followers     Follow[]      @relation("followers")
@@ -41,6 +42,7 @@ model Post {
   content  String
   user     User      @relation(fields: [userId], references: [id])
   userId   Int
+  notis    Noti[]
   comments Comment[]
   postLikes PostLike[]
   created  DateTime  @default(now())
@@ -102,4 +104,17 @@ model FriendRequestStatus {
   created   DateTime @default(now())
   
   friends   Friend[]
+}
+
+model Noti{
+  id        Int       @id   @default(autoincrement())
+  type      String
+  content   String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+  read      Boolean   @default(false)
+  created   DateTime  @default(now())
 }

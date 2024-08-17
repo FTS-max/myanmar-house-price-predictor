@@ -9,7 +9,7 @@ const { auth, isOwner } = authModule;
 const router = express.Router();
 const upload = multer();
 
-router.get("/posts", async (req, res) => {
+router.get("/posts", async(req, res) => {
     try {
         const data = await prisma.post.findMany({
             include: {
@@ -28,7 +28,7 @@ router.get("/posts", async (req, res) => {
     }
 })
 
-router.get("/posts/:id", async (req, res) => {
+router.get("/posts/:id", async(req, res) => {
     try {
         const { id } = req.params;
 
@@ -54,7 +54,7 @@ router.get("/posts/:id", async (req, res) => {
     }
 })
 
-router.post("/posts/create", upload.none(), auth, async (req, res) => {
+router.post("/posts/create", upload.none(), auth, async(req, res) => {
     try {
         const { content, userId } = req.body
         if (!content) {
@@ -63,7 +63,7 @@ router.post("/posts/create", upload.none(), auth, async (req, res) => {
 
         const user = res.locals.user;
         const post = await prisma.post.create({
-            create: {
+            data: {
                 content,
                 userId: user.id,
             }
@@ -84,7 +84,7 @@ router.post("/posts/create", upload.none(), auth, async (req, res) => {
     }
 })
 
-router.get("/posts/edit/:id", async (req, res) => {
+router.get("/posts/edit/:id", async(req, res) => {
     try {
         const { id } = req.params;
         const data = await prisma.post.findFirst({
@@ -99,7 +99,7 @@ router.get("/posts/edit/:id", async (req, res) => {
     }
 })
 
-router.put("/posts/update/:id", upload.none(), async (req, res) => {
+router.put("/posts/update/:id", upload.none(), async(req, res) => {
     try {
         const { id } = req.params;
         const { content, userId } = req.body;
@@ -137,7 +137,7 @@ router.put("/posts/update/:id", upload.none(), async (req, res) => {
     }
 });
 
-router.delete('/posts/delete/:id', auth, isOwner("post"), async (req, res) => {
+router.delete('/posts/delete/:id', auth, isOwner("post"), async(req, res) => {
     try {
         const { id } = req.params;
         const idNumber = Number(id);
@@ -163,7 +163,7 @@ router.delete('/posts/delete/:id', auth, isOwner("post"), async (req, res) => {
     }
 });
 
-router.get("/comments", async (req, res) => {
+router.get("/comments", async(req, res) => {
     try {
         const data = await prisma.comment.findMany({
             include: {
@@ -181,7 +181,7 @@ router.get("/comments", async (req, res) => {
     }
 })
 
-router.delete("/comments/delete/:id", auth, isOwner("post"), async (req, res) => {
+router.delete("/comments/delete/:id", auth, isOwner("post"), async(req, res) => {
     const { id } = req.params
 
     await prisma.comment.delete({
@@ -191,7 +191,7 @@ router.delete("/comments/delete/:id", auth, isOwner("post"), async (req, res) =>
     res.sendStatus(200)
 })
 
-router.post("/comments", auth, async (req, res) => {
+router.post("/comments", auth, async(req, res) => {
     const { content, postId } = req.body
 
     if (!content || !postId) {
@@ -210,11 +210,17 @@ router.post("/comments", auth, async (req, res) => {
     })
 
     comment.user = user
+    await addNoti({
+        type: "comment",
+        content: "reply your post",
+        postId,
+        userId: user.Id
+    })
 
     res.json(comment)
 })
 
-router.post("/like/posts/:id", upload.none(), auth, async (req, res) => {
+router.post("/like/posts/:id", upload.none(), auth, async(req, res) => {
     const { id } = req.params
     const user = res.locals.user;
 
@@ -225,10 +231,17 @@ router.post("/like/posts/:id", upload.none(), auth, async (req, res) => {
         },
     });
 
+    await addNoti({
+        type: "like",
+        content: "like your post",
+        postId,
+        userId: user.id
+    })
+
     res.json({ like })
 })
 
-router.delete("/unlike/posts/:id", auth, async (req, res) => {
+router.delete("/unlike/posts/:id", auth, async(req, res) => {
     const { id } = req.params;
     const user = req.locals.user;
 
@@ -244,7 +257,7 @@ router.delete("/unlike/posts/:id", auth, async (req, res) => {
     });
 })
 
-router.post("/like/comments/:id", upload.none(), auth, async (req, res) => {
+router.post("/like/comments/:id", upload.none(), auth, async(req, res) => {
     const { id } = req.params;
     const user = res.locals.user;
 
@@ -254,10 +267,18 @@ router.post("/like/comments/:id", upload.none(), auth, async (req, res) => {
             userId: Number(user, id)
         }
     })
+
+    await addNoti({
+        type: "like",
+        content: "like your comment",
+        postId: id,
+        userId: user.id
+    })
+
     res.json({ Like })
 })
 
-router.delete("/unlike/comments/:id", auth, async (req, res) => {
+router.delete("/unlike/comments/:id", auth, async(req, res) => {
     const { id } = req.params;
     const user = res.locals.user;
 
@@ -271,7 +292,7 @@ router.delete("/unlike/comments/:id", auth, async (req, res) => {
     res.json({ msg: `Unlike comment ${id}` })
 })
 
-router.get("/likes/posts/:id", async (req, res) => {
+router.get("/likes/posts/:id", async(req, res) => {
     const { id } = req.params;
 
     const data = await prisma.postLike.findMany({
@@ -291,7 +312,7 @@ router.get("/likes/posts/:id", async (req, res) => {
     res.json(data)
 })
 
-router.get("/likes/comments/:id", async () => {
+router.get("/likes/comments/:id", async() => {
     const { id } = req.params;
 
     const data = await prisma.commentLike.findMany({
@@ -310,7 +331,7 @@ router.get("/likes/comments/:id", async () => {
     res.json(data)
 })
 
-router.get("/following/posts", auth, async (req, res) => {
+router.get("/following/posts", auth, async(req, res) => {
     const user = res.locals.user;
 
     const follow = await prisma.follow.findMany({
@@ -323,8 +344,7 @@ router.get("/following/posts", auth, async (req, res) => {
 
     const data = await prisma.post.findMany({
         where: {
-            userId: {
-                in: users
+            userId: { in: users
             }
         },
         include: {
@@ -338,7 +358,7 @@ router.get("/following/posts", auth, async (req, res) => {
     res.json(data)
 })
 
-router.get("/friend/posts", auth, async (req, res) => {
+router.get("/friend/posts", auth, async(req, res) => {
     const user = res.locals.user;
 
     const friend = await prisma.friend.findMany({
@@ -351,8 +371,7 @@ router.get("/friend/posts", auth, async (req, res) => {
 
     const data = await prisma.post.findMany({
         where: {
-            userId: {
-                in: friends
+            userId: { in: friends
             }
         },
         include: {
@@ -365,5 +384,73 @@ router.get("/friend/posts", auth, async (req, res) => {
     });
     res.json(data)
 })
+
+router.get("/notis", auth, async(req) => {
+    const user = res.locals.user;
+    const notis = await prisma.noti.fin({
+        where: {
+            post: {
+                userId: Number(user.id)
+            },
+        },
+        include: { user: true },
+        orderBy: { id: "desc" },
+        take: 20
+    });
+
+    res.json(notis);
+})
+
+router.put("/notis/read", auth, async(req, res) => {
+    const user = res.locals.user;
+
+    await prisma.noti.updateMany({
+        where: {
+            post: {
+                userId: Number(user.id),
+            },
+        },
+        data: { read: true },
+    });
+
+    res.json({ msg: "Marked all notis read" })
+})
+
+router.put("/notis/read/:id", auth, async(req, res) => {
+    const { id } = req.params;
+
+    const noti = await prisma.noti.update({
+        where: { id: Number(id) },
+        data: { read: true }
+    });
+
+    res.json(noti)
+})
+
+async function addNoti({ type, content, postId, userId }) {
+    const post = await prisma.post.findUnique({
+        where: {
+            id: Number(postId)
+        },
+    });
+
+    if (post.userId == userId) return false;
+
+    clients.map(client => {
+        if (client.userId == post.userId) {
+            client.ws.send(JSON.stringify({ event: "noti" }));
+            console.log(`WS: event sent to ${client.userId}: noti`)
+        }
+    })
+
+    return await prisma.noti.create({
+        data: {
+            type,
+            content,
+            postId: Number(postId),
+            userId: Number(userId)
+        },
+    });
+}
 
 export default router

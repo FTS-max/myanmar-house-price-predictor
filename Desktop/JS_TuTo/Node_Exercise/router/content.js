@@ -9,7 +9,7 @@ const { auth, isOwner } = authModule;
 const router = express.Router();
 const upload = multer();
 
-router.get("/posts", async(req, res) => {
+router.get("/posts", auth, async(req, res) => {
     try {
         const data = await prisma.post.findMany({
             include: {
@@ -28,7 +28,7 @@ router.get("/posts", async(req, res) => {
     }
 })
 
-router.get("/posts/:id", async(req, res) => {
+router.get("/posts/:id", auth, async(req, res) => {
     try {
         const { id } = req.params;
 
@@ -56,7 +56,7 @@ router.get("/posts/:id", async(req, res) => {
 
 router.post("/posts/create", upload.none(), auth, async(req, res) => {
     try {
-        const { content, userId } = req.body
+        const { content } = req.body
         if (!content) {
             return res.status(400).json({ msg: "content required" })
         }
@@ -195,8 +195,7 @@ router.post("/comments", auth, async(req, res) => {
     const { content, postId } = req.body
 
     if (!content || !postId) {
-        return
-        res.status(400).json({ msg: "content and postId required" })
+        return res.status(400).json({ msg: "content and postId required" })
     }
 
     const user = res.locals.user
@@ -345,7 +344,7 @@ router.get("/following/posts", auth, async(req, res) => {
     const data = await prisma.post.findMany({
         where: {
             userId: { in: users
-            }
+            },
         },
         include: {
             user: true,
@@ -375,7 +374,7 @@ router.get("/friend/posts", auth, async(req, res) => {
             }
         },
         include: {
-            user: true,
+            friends: true,
             comments: true,
             Likes: true
         },

@@ -218,7 +218,7 @@ router.post('/cleanup-tokens', upload.none(), async(req, res) => {
 
 router.get("/verify", auth, async(req, res) => {
     const user = res.locals.user;
-    res.json(user)
+    res.json(user);
 })
 
 export default router

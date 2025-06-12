@@ -1,0 +1,38 @@
+{
+  "xgboost": {
+    "mae": 467355.51043970906,
+    "rmse": 681862.4324267443,
+    "r2_score": 0.925074278147854,
+    "mape": 13.387158981498319,
+    "training_samples": 800,
+    "last_updated": "2025-06-10T05:23:26.862424",
+    "feature_count": 17
+  },
+  "lightgbm": {
+    "mae": 477329.8494968902,
+    "rmse": 701328.405044413,
+    "r2_score": 0.9207352184984872,
+    "mape": 13.257347085505906,
+    "training_samples": 800,
+    "last_updated": "2025-06-10T05:23:37.899469",
+    "feature_count": 17
+  },
+  "random_forest": {
+    "mae": 558699.9852464641,
+    "rmse": 748527.733271058,
+    "r2_score": 0.9097071834421764,
+    "mape": 17.273174873890383,
+    "training_samples": 800,
+    "last_updated": "2025-06-10T05:23:51.938661",
+    "feature_count": 17
+  },
+  "gradient_boosting": {
+    "mae": 470781.7520655654,
+    "rmse": 648914.1413407314,
+    "r2_score": 0.9321403077130662,
+    "mape": 13.561430025788738,
+    "training_samples": 800,
+    "last_updated": "2025-06-10T05:24:03.117059",
+    "feature_count": 17
+  }
+}

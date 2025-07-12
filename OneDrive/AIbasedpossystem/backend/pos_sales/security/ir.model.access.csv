@@ -1,0 +1,25 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+# POS Order
+pos_sales_order_owner,POS Order Owner,model_pos_order,pos_shop_core.group_pos_shop_owner,1,1,1,1
+pos_sales_order_manager,POS Order Manager,model_pos_order,pos_shop_core.group_pos_shop_manager,1,1,1,0
+pos_sales_order_cashier,POS Order Cashier,model_pos_order,pos_shop_core.group_pos_shop_cashier,1,1,1,0
+
+# POS Order Line
+pos_sales_order_line_owner,POS Order Line Owner,model_pos_order_line,pos_shop_core.group_pos_shop_owner,1,1,1,1
+pos_sales_order_line_manager,POS Order Line Manager,model_pos_order_line,pos_shop_core.group_pos_shop_manager,1,1,1,1
+pos_sales_order_line_cashier,POS Order Line Cashier,model_pos_order_line,pos_shop_core.group_pos_shop_cashier,1,1,1,1
+
+# POS Payment
+pos_sales_payment_owner,POS Payment Owner,model_pos_payment,pos_shop_core.group_pos_shop_owner,1,1,1,1
+pos_sales_payment_manager,POS Payment Manager,model_pos_payment,pos_shop_core.group_pos_shop_manager,1,1,1,0
+pos_sales_payment_cashier,POS Payment Cashier,model_pos_payment,pos_shop_core.group_pos_shop_cashier,1,1,1,0
+
+# POS Payment Method
+pos_sales_payment_method_owner,POS Payment Method Owner,model_pos_payment_method,pos_shop_core.group_pos_shop_owner,1,1,1,1
+pos_sales_payment_method_manager,POS Payment Method Manager,model_pos_payment_method,pos_shop_core.group_pos_shop_manager,1,1,1,0
+pos_sales_payment_method_cashier,POS Payment Method Cashier,model_pos_payment_method,pos_shop_core.group_pos_shop_cashier,1,0,0,0
+
+# POS Session
+pos_sales_session_owner,POS Session Owner,model_pos_session,pos_shop_core.group_pos_shop_owner,1,1,1,1
+pos_sales_session_manager,POS Session Manager,model_pos_session,pos_shop_core.group_pos_shop_manager,1,1,1,0
+pos_sales_session_cashier,POS Session Cashier,model_pos_session,pos_shop_core.group_pos_shop_cashier,1,1,1,0

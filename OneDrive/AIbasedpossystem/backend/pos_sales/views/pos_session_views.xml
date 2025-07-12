@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- POS Session Form View -->
+        <record id="view_pos_session_form" model="ir.ui.view">
+            <field name="name">pos.session.form</field>
+            <field name="model">pos.session</field>
+            <field name="arch" type="xml">
+                <form string="POS Session">
+                    <header>
+                        <button name="action_open_session" string="Open Session" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                        <button name="action_close_session" string="Close Session" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'opened')]}"/>
+                        <button name="action_validate_closing" string="Validate Closing" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'closing_control')]}"/>
+                        <button name="action_cancel_session" string="Cancel Session" type="object" attrs="{'invisible': [('state', 'not in', ['draft', 'opened'])]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,opened,closing_control,closed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_orders" type="object" class="oe_stat_button" icon="fa-shopping-cart">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value"><field name="order_count"/></span>
+                                    <span class="o_stat_text">Orders</span>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="user_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="shop_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}" readonly="1"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="start_at" readonly="1"/>
+                                <field name="stop_at" readonly="1"/>
+                                <field name="cash_control" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Cash Control" name="cash_control" attrs="{'invisible': [('cash_control', '=', False)]}">
+                                <group>
+                                    <group>
+                                        <field name="cash_register_balance_start" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                        <field name="cash_register_balance_end" readonly="1"/>
+                                        <field name="cash_register_balance_end_real" attrs="{'readonly': [('state', 'not in', ['opened', 'closing_control'])]}" widget="monetary"/>
+                                        <field name="cash_register_difference" readonly="1" widget="monetary"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Orders" name="orders">
+                                <field name="order_ids" readonly="1">
+                                    <tree string="Orders">
+                                        <field name="name"/>
+                                        <field name="date_order"/>
+                                        <field name="user_id"/>
+                                        <field name="partner_id"/>
+                                        <field name="amount_total" sum="Total" widget="monetary"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Payments" name="payments">
+                                <group>
+                                    <field name="total_payments_amount" widget="monetary"/>
+                                </group>
+                                <field name="payment_method_ids" widget="many2many_tags" readonly="1"/>
+                            </page>
+                            <page string="Notes" name="notes">
+                                <field name="note" placeholder="Add internal notes here..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <!-- POS Session Tree View -->
+        <record id="view_pos_session_tree" model="ir.ui.view">
+            <field name="name">pos.session.tree</field>
+            <field name="model">pos.session</field>
+            <field name="arch" type="xml">
+                <tree string="POS Sessions" decoration-info="state == 'draft'" decoration-muted="state == 'cancelled'" decoration-success="state == 'closed'" decoration-warning="state == 'closing_control'">
+                    <field name="name"/>
+                    <field name="user_id"/>
+                    <field name="shop_id"/>
+                    <field name="start_at"/>
+                    <field name="stop_at"/>
+                    <field name="order_count"/>
+                    <field name="total_payments_amount" sum="Total" widget="monetary"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- POS Session Search View -->
+        <record id="view_pos_session_search" model="ir.ui.view">
+            <field name="name">pos.session.search</field>
+            <field name="model">pos.session</field>
+            <field name="arch" type="xml">
+                <search string="Search POS Sessions">
+                    <field name="name" string="Session"/>
+                    <field name="user_id"/>
+                    <field name="shop_id"/>
+                    <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="In Progress" name="opened" domain="[('state', '=', 'opened')]"/>
+                    <filter string="Closing Control" name="closing_control" domain="[('state', '=', 'closing_control')]"/>
+                    <filter string="Closed" name="closed" domain="[('state', '=', 'closed')]"/>
+                    <filter string="Cancelled" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                    <filter string="Today" name="today" domain="[('start_at', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0))), ('start_at', '&lt;=', datetime.datetime.combine(context_today(), datetime.time(23,59,59)))]"/>
+                    <filter string="This Week" name="this_week" domain="[('start_at', '&gt;=', (context_today() + relativedelta(weeks=-1, days=1, weekday=0)).strftime('%Y-%m-%d')), ('start_at', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d'))]"/>
+                    <filter string="This Month" name="this_month" domain="[('start_at', '&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')), ('start_at', '&lt;=', (context_today() + relativedelta(months=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Shop" name="shop" domain="[]" context="{'group_by': 'shop_id'}"/>
+                        <filter string="Responsible" name="user" domain="[]" context="{'group_by': 'user_id'}"/>
+                        <filter string="Status" name="status" domain="[]" context="{'group_by': 'state'}"/>
+                        <filter string="Start Date" name="start_date" domain="[]" context="{'group_by': 'start_at:day'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        <!-- POS Session Calendar View -->
+        <record id="view_pos_session_calendar" model="ir.ui.view">
+            <field name="name">pos.session.calendar</field>
+            <field name="model">pos.session</field>
+            <field name="arch" type="xml">
+                <calendar string="POS Sessions" date_start="start_at" date_stop="stop_at" color="shop_id">
+                    <field name="name"/>
+                    <field name="user_id"/>
+                    <field name="state"/>
+                </calendar>
+            </field>
+        </record>
+        
+        <!-- POS Session Pivot View -->
+        <record id="view_pos_session_pivot" model="ir.ui.view">
+            <field name="name">pos.session.pivot</field>
+            <field name="model">pos.session</field>
+            <field name="arch" type="xml">
+                <pivot string="POS Sessions Analysis">
+                    <field name="start_at" type="row" interval="day"/>
+                    <field name="shop_id" type="col"/>
+                    <field name="total_payments_amount" type="measure" widget="monetary"/>
+                    <field name="order_count" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+        
+        <!-- POS Session Graph View -->
+        <record id="view_pos_session_graph" model="ir.ui.view">
+            <field name="name">pos.session.graph</field>
+            <field name="model">pos.session</field>
+            <field name="arch" type="xml">
+                <graph string="POS Sessions" type="bar">
+                    <field name="shop_id"/>
+                    <field name="total_payments_amount" type="measure"/>
+                </graph>
+            </field>
+        </record>
+        
+        <!-- POS Session Action -->
+        <record id="action_pos_session" model="ir.actions.act_window">
+            <field name="name">POS Sessions</field>
+            <field name="res_model">pos.session</field>
+            <field name="view_mode">tree,form,calendar,pivot,graph</field>
+            <field name="search_view_id" ref="view_pos_session_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new POS Session
+                </p>
+                <p>
+                    Create a new POS session to start selling through the point of sale.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

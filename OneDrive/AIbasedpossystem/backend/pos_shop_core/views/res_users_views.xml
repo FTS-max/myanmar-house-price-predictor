@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- User Form View Extension -->
+        <record id="view_users_form_pos_shop" model="ir.ui.view">
+            <field name="name">res.users.form.pos.shop</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+                <notebook position="inside">
+                    <page string="POS Shops" name="pos_shops">
+                        <group>
+                            <field name="pos_role"/>
+                        </group>
+                        <group string="Owned Shops" attrs="{'invisible': [('pos_role', '!=', 'owner')]}">
+                            <field name="owned_shop_ids" nolabel="1">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="city"/>
+                                    <field name="country_id"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group string="Managed Shops" attrs="{'invisible': [('pos_role', '!=', 'manager')]}">
+                            <field name="managed_shop_ids" nolabel="1" widget="many2many_tags"/>
+                        </group>
+                        <group string="Cashier Shops" attrs="{'invisible': [('pos_role', '!=', 'cashier')]}">
+                            <field name="cashier_shop_ids" nolabel="1" widget="many2many_tags"/>
+                        </group>
+                        <group string="All Assigned Shops">
+                            <field name="shop_ids" nolabel="1" readonly="1">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="owner_id"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Record Rules for Product Template -->
+        <record id="rule_product_template_shop_owner" model="ir.rule">
+            <field name="name">Product: Shop Owner Access</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="domain_force">[('shop_id.owner_id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_owner'))]"/>
+        </record>
+        
+        <record id="rule_product_template_shop_manager" model="ir.rule">
+            <field name="name">Product: Shop Manager Access</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="domain_force">[('shop_id','in',user.managed_shop_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_manager'))]"/>
+        </record>
+        
+        <record id="rule_product_template_shop_cashier" model="ir.rule">
+            <field name="name">Product: Shop Cashier Access</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="domain_force">[('shop_id','in',user.cashier_shop_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_cashier'))]"/>
+        </record>
+        
+        <!-- Record Rules for Product Category -->
+        <record id="rule_pos_product_category_shop_owner" model="ir.rule">
+            <field name="name">Product Category: Shop Owner Access</field>
+            <field name="model_id" ref="model_pos_product_category"/>
+            <field name="domain_force">[('shop_id.owner_id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_owner'))]"/>
+        </record>
+        
+        <record id="rule_pos_product_category_shop_manager" model="ir.rule">
+            <field name="name">Product Category: Shop Manager Access</field>
+            <field name="model_id" ref="model_pos_product_category"/>
+            <field name="domain_force">[('shop_id','in',user.managed_shop_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_manager'))]"/>
+        </record>
+        
+        <record id="rule_pos_product_category_shop_cashier" model="ir.rule">
+            <field name="name">Product Category: Shop Cashier Access</field>
+            <field name="model_id" ref="model_pos_product_category"/>
+            <field name="domain_force">[('shop_id','in',user.cashier_shop_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_cashier'))]"/>
+        </record>
+        
+        <!-- Record Rules for Product Images -->
+        <record id="rule_pos_product_image_shop_owner" model="ir.rule">
+            <field name="name">Product Image: Shop Owner Access</field>
+            <field name="model_id" ref="model_pos_product_image"/>
+            <field name="domain_force">[('product_tmpl_id.shop_id.owner_id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_owner'))]"/>
+        </record>
+        
+        <record id="rule_pos_product_image_shop_manager" model="ir.rule">
+            <field name="name">Product Image: Shop Manager Access</field>
+            <field name="model_id" ref="model_pos_product_image"/>
+            <field name="domain_force">[('product_tmpl_id.shop_id','in',user.managed_shop_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_manager'))]"/>
+        </record>
+        
+        <record id="rule_pos_product_image_shop_cashier" model="ir.rule">
+            <field name="name">Product Image: Shop Cashier Access</field>
+            <field name="model_id" ref="model_pos_product_image"/>
+            <field name="domain_force">[('product_tmpl_id.shop_id','in',user.cashier_shop_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_cashier'))]"/>
+        </record>
+    </data>
+</odoo>

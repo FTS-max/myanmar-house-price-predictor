@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Product Category Form View -->
+        <record id="view_pos_product_category_form" model="ir.ui.view">
+            <field name="name">pos.product.category.form</field>
+            <field name="model">pos.product.category</field>
+            <field name="arch" type="xml">
+                <form string="Product Category">
+                    <sheet>
+                        <field name="image" widget="image" class="oe_avatar"/>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name" placeholder="e.g. Beverages"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="shop_id" options="{'no_create': True}"/>
+                                <field name="parent_id" domain="[('shop_id', '=', shop_id)]"/>
+                                <field name="sequence"/>
+                            </group>
+                            <group>
+                                <field name="pos_available"/>
+                                <field name="pos_sequence"/>
+                                <field name="color" widget="color_picker"/>
+                            </group>
+                        </group>
+                        <field name="product_count" invisible="1"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <!-- Product Category Tree View -->
+        <record id="view_pos_product_category_tree" model="ir.ui.view">
+            <field name="name">pos.product.category.tree</field>
+            <field name="model">pos.product.category</field>
+            <field name="field_parent">child_id</field>
+            <field name="arch" type="xml">
+                <tree string="Product Categories">
+                    <field name="sequence" widget="handle"/>
+                    <field name="complete_name"/>
+                    <field name="shop_id"/>
+                    <field name="pos_available"/>
+                    <field name="product_count"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Product Category Search View -->
+        <record id="view_pos_product_category_search" model="ir.ui.view">
+            <field name="name">pos.product.category.search</field>
+            <field name="model">pos.product.category</field>
+            <field name="arch" type="xml">
+                <search string="Search Product Categories">
+                    <field name="name"/>
+                    <field name="shop_id"/>
+                    <filter string="Available in POS" name="pos_available" domain="[('pos_available','=',True)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Shop" name="shop" domain="[]" context="{'group_by':'shop_id'}"/>
+                        <filter string="Parent Category" name="parent" domain="[]" context="{'group_by':'parent_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        <!-- Product Category Action -->
+        <record id="action_pos_product_category" model="ir.actions.act_window">
+            <field name="name">Product Categories</field>
+            <field name="res_model">pos.product.category</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_pos_product_category_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first product category!
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

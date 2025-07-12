@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Shop Form View -->
+        <record id="view_pos_shop_form" model="ir.ui.view">
+            <field name="name">pos.shop.form</field>
+            <field name="model">pos.shop</field>
+            <field name="arch" type="xml">
+                <form string="Shop">
+                    <header>
+                        <button name="generate_new_api_key" string="Generate New API Key" type="object" groups="base.group_system"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_products" type="object" class="oe_stat_button" icon="fa-cubes">
+                                <field name="product_count" widget="statinfo" string="Products"/>
+                            </button>
+                            <button name="action_view_orders" type="object" class="oe_stat_button" icon="fa-shopping-cart">
+                                <field name="order_count" widget="statinfo" string="Orders"/>
+                            </button>
+                        </div>
+                        <field name="active" invisible="1"/>
+                        <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Shop Name"/>
+                            </h1>
+                            <h2>
+                                <field name="code" placeholder="Shop Code"/>
+                            </h2>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="owner_id"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="email"/>
+                                <field name="phone"/>
+                                <field name="website" widget="url"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Address" name="address">
+                                <group>
+                                    <group>
+                                        <field name="street"/>
+                                        <field name="street2"/>
+                                        <field name="city"/>
+                                        <field name="state_id"/>
+                                    </group>
+                                    <group>
+                                        <field name="zip"/>
+                                        <field name="country_id"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Users" name="users">
+                                <group>
+                                    <field name="manager_ids" widget="many2many_tags"/>
+                                    <field name="cashier_ids" widget="many2many_tags"/>
+                                </group>
+                            </page>
+                            <page string="Schedule" name="schedule">
+                                <group>
+                                    <field name="opening_time" widget="float_time"/>
+                                    <field name="closing_time" widget="float_time"/>
+                                    <field name="timezone"/>
+                                </group>
+                            </page>
+                            <page string="API Access" name="api_access" groups="base.group_system">
+                                <group>
+                                    <field name="api_key" password="True"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Shop Tree View -->
+        <record id="view_pos_shop_tree" model="ir.ui.view">
+            <field name="name">pos.shop.tree</field>
+            <field name="model">pos.shop</field>
+            <field name="arch" type="xml">
+                <tree string="Shops">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="owner_id"/>
+                    <field name="city"/>
+                    <field name="country_id"/>
+                    <field name="phone"/>
+                    <field name="email"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Shop Search View -->
+        <record id="view_pos_shop_search" model="ir.ui.view">
+            <field name="name">pos.shop.search</field>
+            <field name="model">pos.shop</field>
+            <field name="arch" type="xml">
+                <search string="Search Shop">
+                    <field name="name" string="Shop"/>
+                    <field name="code"/>
+                    <field name="owner_id"/>
+                    <field name="city"/>
+                    <field name="country_id"/>
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Owner" name="owner" domain="[]" context="{'group_by':'owner_id'}"/>
+                        <filter string="Country" name="country" domain="[]" context="{'group_by':'country_id'}"/>
+                        <filter string="Company" name="company" domain="[]" context="{'group_by':'company_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Shop Action -->
+        <record id="action_pos_shop" model="ir.actions.act_window">
+            <field name="name">Shops</field>
+            <field name="res_model">pos.shop</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_pos_shop_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first shop!
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

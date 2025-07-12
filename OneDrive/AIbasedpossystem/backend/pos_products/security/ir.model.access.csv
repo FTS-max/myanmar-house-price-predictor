@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pos_product_category_owner,pos.product.category owner,model_pos_product_category,pos_shop_core.group_pos_shop_owner,1,1,1,1
+access_pos_product_category_manager,pos.product.category manager,model_pos_product_category,pos_shop_core.group_pos_shop_manager,1,1,1,1
+access_pos_product_category_cashier,pos.product.category cashier,model_pos_product_category,pos_shop_core.group_pos_shop_cashier,1,0,0,0
+access_pos_product_image_owner,pos.product.image owner,model_pos_product_image,pos_shop_core.group_pos_shop_owner,1,1,1,1
+access_pos_product_image_manager,pos.product.image manager,model_pos_product_image,pos_shop_core.group_pos_shop_manager,1,1,1,1
+access_pos_product_image_cashier,pos.product.image cashier,model_pos_product_image,pos_shop_core.group_pos_shop_cashier,1,0,0,0

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- POS Payment Method Form View -->
+        <record id="view_pos_payment_method_form" model="ir.ui.view">
+            <field name="name">pos.payment.method.form</field>
+            <field name="model">pos.payment.method</field>
+            <field name="arch" type="xml">
+                <form string="Payment Method">
+                    <sheet>
+                        <field name="image" widget="image" class="oe_avatar"/>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name" placeholder="e.g. Cash"/></h1>
+                            <field name="code" placeholder="Technical code for API integration"/>
+                        </div>
+                        <notebook>
+                            <page string="General Information" name="general_info">
+                                <group>
+                                    <group>
+                                        <field name="shop_id" options="{'no_create': True}"/>
+                                        <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                                        <field name="sequence" groups="base.group_no_one"/>
+                                        <field name="active" widget="boolean_toggle"/>
+                                    </group>
+                                    <group>
+                                        <field name="is_cash_count"/>
+                                        <field name="split_transactions" attrs="{'invisible': [('is_cash_count', '=', True)]}"/>
+                                    </group>
+                                </group>
+                                <group string="Description">
+                                    <field name="description" nolabel="1" placeholder="Description displayed to the cashier when selecting this payment method..."/>
+                                </group>
+                            </page>
+                            <page string="Accounting" name="accounting">
+                                <group>
+                                    <group>
+                                        <field name="journal_id" options="{'no_create': True}"/>
+                                        <field name="receivable_account_id" options="{'no_create': True}"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Payment Terminal" name="payment_terminal" attrs="{'invisible': [('is_cash_count', '=', True)]}">
+                                <group>
+                                    <group>
+                                        <field name="use_payment_terminal"/>
+                                        <field name="payment_terminal_provider" attrs="{'invisible': [('use_payment_terminal', '=', False)], 'required': [('use_payment_terminal', '=', True)]}"/>
+                                    </group>
+                                </group>
+                                <group string="API Configuration" attrs="{'invisible': ['|', ('use_payment_terminal', '=', False), ('payment_terminal_provider', '=', 'none')]}">
+                                    <group>
+                                        <field name="terminal_api_key" password="True" attrs="{'required': [('use_payment_terminal', '=', True), ('payment_terminal_provider', '!=', 'none')]}"/>
+                                        <field name="terminal_api_secret" password="True" attrs="{'required': [('use_payment_terminal', '=', True), ('payment_terminal_provider', '!=', 'none')]}"/>
+                                        <field name="terminal_endpoint" attrs="{'invisible': [('payment_terminal_provider', '!=', 'custom')], 'required': [('payment_terminal_provider', '=', 'custom')]}"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <!-- POS Payment Method Tree View -->
+        <record id="view_pos_payment_method_tree" model="ir.ui.view">
+            <field name="name">pos.payment.method.tree</field>
+            <field name="model">pos.payment.method</field>
+            <field name="arch" type="xml">
+                <tree string="Payment Methods">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="shop_id"/>
+                    <field name="is_cash_count"/>
+                    <field name="use_payment_terminal"/>
+                    <field name="payment_terminal_provider"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- POS Payment Method Search View -->
+        <record id="view_pos_payment_method_search" model="ir.ui.view">
+            <field name="name">pos.payment.method.search</field>
+            <field name="model">pos.payment.method</field>
+            <field name="arch" type="xml">
+                <search string="Search Payment Methods">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="shop_id"/>
+                    <filter string="Cash" name="cash" domain="[('is_cash_count', '=', True)]"/>
+                    <filter string="Terminal" name="terminal" domain="[('use_payment_terminal', '=', True)]"/>
+                    <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                    <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Shop" name="shop" domain="[]" context="{'group_by': 'shop_id'}"/>
+                        <filter string="Terminal Provider" name="provider" domain="[]" context="{'group_by': 'payment_terminal_provider'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        <!-- POS Payment Method Action -->
+        <record id="action_pos_payment_method" model="ir.actions.act_window">
+            <field name="name">Payment Methods</field>
+            <field name="res_model">pos.payment.method</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_pos_payment_method_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new payment method
+                </p>
+                <p>
+                    Define the payment methods available in your point of sale.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

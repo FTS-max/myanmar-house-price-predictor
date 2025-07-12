@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Security Groups -->
+        <record id="group_pos_shop_owner" model="res.groups">
+            <field name="name">POS Shop Owner</field>
+            <field name="category_id" ref="base.module_category_usability"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <record id="group_pos_shop_manager" model="res.groups">
+            <field name="name">POS Shop Manager</field>
+            <field name="category_id" ref="base.module_category_usability"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <record id="group_pos_shop_cashier" model="res.groups">
+            <field name="name">POS Shop Cashier</field>
+            <field name="category_id" ref="base.module_category_usability"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- Record Rules -->
+        <record id="rule_pos_shop_owner" model="ir.rule">
+            <field name="name">Shop Owner: Full access to owned shops</field>
+            <field name="model_id" ref="model_pos_shop"/>
+            <field name="domain_force">[('owner_id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_pos_shop_owner'))]"/>
+        </record>
+        
+        <record id="rule_pos_shop_manager" model="ir.rule">
+            <field name="name">Shop Manager: Access to managed shops</field>
+            <field name="model_id" ref="model_pos_shop"/>
+            <field name="domain_force">[('id','in',user.managed_shop_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('group_pos_shop_manager'))]"/>
+        </record>
+        
+        <record id="rule_pos_shop_cashier" model="ir.rule">
+            <field name="name">Shop Cashier: Access to assigned shops</field>
+            <field name="model_id" ref="model_pos_shop"/>
+            <field name="domain_force">[('id','in',user.cashier_shop_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('group_pos_shop_cashier'))]"/>
+        </record>
+    </data>
+</odoo>

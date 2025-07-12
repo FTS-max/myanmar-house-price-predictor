@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Product Template Form View Extension -->
+        <record id="view_product_template_form_pos_shop" model="ir.ui.view">
+            <field name="name">product.template.form.pos.shop</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <field name="categ_id" position="after">
+                    <field name="shop_id" options="{'no_create': True}"/>
+                    <field name="shop_category_id" domain="[('shop_id', '=', shop_id)]"
+                           options="{'no_create_edit': True}"
+                           attrs="{'invisible': [('shop_id', '=', False)]}"/>
+                </field>
+                
+                <xpath expr="//page[@name='general_information']" position="after">
+                    <page string="POS Settings" name="pos_settings">
+                        <group>
+                            <group string="POS Display">
+                                <field name="pos_available"/>
+                                <field name="pos_sequence"/>
+                                <field name="pos_description"/>
+                                <field name="pos_use_variants"/>
+                            </group>
+                            <group string="POS Pricing">
+                                <field name="list_price_shop"/>
+                                <field name="discount_price"/>
+                                <field name="discount_start"/>
+                                <field name="discount_end"/>
+                            </group>
+                        </group>
+                        <group string="Additional Images">
+                            <field name="pos_image_ids" widget="one2many_list">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="image" widget="image" height="64px"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group string="AI Integration" attrs="{'invisible': [('shop_id', '=', False)]}">
+                            <field name="ai_description"/>
+                            <field name="ai_tags"/>
+                        </group>
+                    </page>
+                </xpath>
+                
+                <field name="barcode" position="after">
+                    <field name="shop_sku" attrs="{'invisible': [('shop_id', '=', False)]}"/>
+                </field>
+            </field>
+        </record>
+        
+        <!-- Product Template Tree View Extension -->
+        <record id="view_product_template_tree_pos_shop" model="ir.ui.view">
+            <field name="name">product.template.tree.pos.shop</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="shop_id" optional="show"/>
+                    <field name="shop_category_id" optional="hide"/>
+                </field>
+                <field name="list_price" position="after">
+                    <field name="list_price_shop" optional="show"/>
+                    <field name="discount_price" optional="hide"/>
+                </field>
+                <field name="active" position="after">
+                    <field name="pos_available" optional="show"/>
+                </field>
+            </field>
+        </record>
+        
+        <!-- Product Template Search View Extension -->
+        <record id="view_product_template_search_pos_shop" model="ir.ui.view">
+            <field name="name">product.template.search.pos.shop</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="shop_id"/>
+                    <field name="shop_category_id"/>
+                    <field name="shop_sku"/>
+                </field>
+                <filter name="categ_id" position="after">
+                    <filter string="Shop" name="shop_id" domain="[]" context="{'group_by':'shop_id'}"/>
+                    <filter string="Shop Category" name="shop_category_id" domain="[]" context="{'group_by':'shop_category_id'}"/>
+                </filter>
+                <filter name="filter_to_sell" position="after">
+                    <filter string="Available in POS" name="pos_available" domain="[('pos_available','=',True)]"/>
+                    <filter string="On Discount" name="on_discount" domain="[('discount_price','>',0),('discount_start','&lt;=',context_today().strftime('%Y-%m-%d')),('discount_end','>=',context_today().strftime('%Y-%m-%d'))]"/>
+                </filter>
+            </field>
+        </record>
+        
+        <!-- Product Template Action -->
+        <record id="action_product_template_pos_shop" model="ir.actions.act_window">
+            <field name="name">Products</field>
+            <field name="res_model">product.template</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="context">{'search_default_filter_to_sell': 1, 'search_default_pos_available': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first product!
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

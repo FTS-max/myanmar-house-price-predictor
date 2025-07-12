@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pos_shop_owner,pos.shop owner,model_pos_shop,pos_shop_core.group_pos_shop_owner,1,1,1,1
+access_pos_shop_manager,pos.shop manager,model_pos_shop,pos_shop_core.group_pos_shop_manager,1,1,0,0
+access_pos_shop_cashier,pos.shop cashier,model_pos_shop,pos_shop_core.group_pos_shop_cashier,1,0,0,0
+access_pos_shop_settings_owner,pos.shop.settings owner,model_pos_shop_settings,pos_shop_core.group_pos_shop_owner,1,1,1,1
+access_pos_shop_settings_manager,pos.shop.settings manager,model_pos_shop_settings,pos_shop_core.group_pos_shop_manager,1,1,0,0

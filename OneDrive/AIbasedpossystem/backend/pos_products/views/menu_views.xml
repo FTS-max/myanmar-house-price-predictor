@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Product Management Menu -->
+        <menuitem id="menu_pos_product_management"
+                  name="Products"
+                  parent="pos_shop_core.menu_pos_shop_root"
+                  sequence="20"/>
+        
+        <!-- Products Menu -->
+        <menuitem id="menu_pos_product"
+                  name="Products"
+                  parent="menu_pos_product_management"
+                  action="action_product_template_pos_shop"
+                  sequence="10"/>
+        
+        <!-- Product Categories Menu -->
+        <menuitem id="menu_pos_product_category"
+                  name="Product Categories"
+                  parent="menu_pos_product_management"
+                  action="action_pos_product_category"
+                  sequence="20"/>
+    </data>
+</odoo>

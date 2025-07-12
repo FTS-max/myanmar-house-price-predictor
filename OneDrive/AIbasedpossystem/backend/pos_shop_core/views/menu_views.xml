@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Main Menu -->
+        <menuitem id="menu_pos_shop_root"
+                  name="POS Shops"
+                  web_icon="pos_shop_core,static/description/icon.png"
+                  sequence="90"/>
+        
+        <!-- Shop Management -->
+        <menuitem id="menu_pos_shop_management"
+                  name="Shop Management"
+                  parent="menu_pos_shop_root"
+                  sequence="10"/>
+        
+        <menuitem id="menu_pos_shop"
+                  name="Shops"
+                  parent="menu_pos_shop_management"
+                  action="action_pos_shop"
+                  sequence="10"/>
+        
+        <!-- Configuration -->
+        <menuitem id="menu_pos_shop_config"
+                  name="Configuration"
+                  parent="menu_pos_shop_root"
+                  sequence="100"/>
+    </data>
+</odoo>

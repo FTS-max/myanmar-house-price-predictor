@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Main Sales Menu -->
+        <menuitem id="menu_pos_sales_root"
+                  name="Sales"
+                  parent="pos_shop_core.menu_pos_shop_root"
+                  sequence="20"/>
+        
+        <!-- Orders Menu -->
+        <menuitem id="menu_pos_sales_orders"
+                  name="Orders"
+                  parent="menu_pos_sales_root"
+                  sequence="10"/>
+                  
+        <menuitem id="menu_pos_sales_orders_all"
+                  name="All Orders"
+                  parent="menu_pos_sales_orders"
+                  action="action_pos_order"
+                  sequence="10"/>
+                  
+        <!-- Sessions Menu -->
+        <menuitem id="menu_pos_sales_sessions"
+                  name="Sessions"
+                  parent="menu_pos_sales_root"
+                  sequence="20"/>
+                  
+        <menuitem id="menu_pos_sales_sessions_all"
+                  name="All Sessions"
+                  parent="menu_pos_sales_sessions"
+                  action="action_pos_session"
+                  sequence="10"/>
+                  
+        <!-- Configuration Menu -->
+        <menuitem id="menu_pos_sales_config"
+                  name="Configuration"
+                  parent="pos_shop_core.menu_pos_shop_config"
+                  sequence="20"/>
+                  
+        <menuitem id="menu_pos_sales_payment_methods"
+                  name="Payment Methods"
+                  parent="menu_pos_sales_config"
+                  action="action_pos_payment_method"
+                  sequence="10"/>
+    </data>
+</odoo>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- POS Order Security Rules -->
+        <record id="pos_order_shop_owner_rule" model="ir.rule">
+            <field name="name">POS Order - Shop Owner Access</field>
+            <field name="model_id" ref="model_pos_order"/>
+            <field name="domain_force">[('shop_id.owner_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_owner'))]" />
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+        
+        <record id="pos_order_shop_manager_rule" model="ir.rule">
+            <field name="name">POS Order - Shop Manager Access</field>
+            <field name="model_id" ref="model_pos_order"/>
+            <field name="domain_force">[('shop_id.manager_ids', 'in', user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_manager'))]" />
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <record id="pos_order_shop_cashier_rule" model="ir.rule">
+            <field name="name">POS Order - Shop Cashier Access</field>
+            <field name="model_id" ref="model_pos_order"/>
+            <field name="domain_force">['|', ('shop_id.cashier_ids', 'in', user.id), ('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_cashier'))]" />
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- POS Order Line Security Rules -->
+        <record id="pos_order_line_shop_owner_rule" model="ir.rule">
+            <field name="name">POS Order Line - Shop Owner Access</field>
+            <field name="model_id" ref="model_pos_order_line"/>
+            <field name="domain_force">[('order_id.shop_id.owner_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_owner'))]" />
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+        
+        <record id="pos_order_line_shop_manager_rule" model="ir.rule">
+            <field name="name">POS Order Line - Shop Manager Access</field>
+            <field name="model_id" ref="model_pos_order_line"/>
+            <field name="domain_force">[('order_id.shop_id.manager_ids', 'in', user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_manager'))]" />
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+        
+        <record id="pos_order_line_shop_cashier_rule" model="ir.rule">
+            <field name="name">POS Order Line - Shop Cashier Access</field>
+            <field name="model_id" ref="model_pos_order_line"/>
+            <field name="domain_force">['|', ('order_id.shop_id.cashier_ids', 'in', user.id), ('order_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_cashier'))]" />
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+        
+        <!-- POS Payment Security Rules -->
+        <record id="pos_payment_shop_owner_rule" model="ir.rule">
+            <field name="name">POS Payment - Shop Owner Access</field>
+            <field name="model_id" ref="model_pos_payment"/>
+            <field name="domain_force">[('order_id.shop_id.owner_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_owner'))]" />
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+        
+        <record id="pos_payment_shop_manager_rule" model="ir.rule">
+            <field name="name">POS Payment - Shop Manager Access</field>
+            <field name="model_id" ref="model_pos_payment"/>
+            <field name="domain_force">[('order_id.shop_id.manager_ids', 'in', user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_manager'))]" />
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <record id="pos_payment_shop_cashier_rule" model="ir.rule">
+            <field name="name">POS Payment - Shop Cashier Access</field>
+            <field name="model_id" ref="model_pos_payment"/>
+            <field name="domain_force">['|', ('order_id.shop_id.cashier_ids', 'in', user.id), ('order_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_cashier'))]" />
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- POS Payment Method Security Rules -->
+        <record id="pos_payment_method_shop_owner_rule" model="ir.rule">
+            <field name="name">POS Payment Method - Shop Owner Access</field>
+            <field name="model_id" ref="model_pos_payment_method"/>
+            <field name="domain_force">['|', ('shop_id', '=', False), ('shop_id.owner_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_owner'))]" />
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+        
+        <record id="pos_payment_method_shop_manager_rule" model="ir.rule">
+            <field name="name">POS Payment Method - Shop Manager Access</field>
+            <field name="model_id" ref="model_pos_payment_method"/>
+            <field name="domain_force">['|', ('shop_id', '=', False), ('shop_id.manager_ids', 'in', user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_manager'))]" />
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <record id="pos_payment_method_shop_cashier_rule" model="ir.rule">
+            <field name="name">POS Payment Method - Shop Cashier Access</field>
+            <field name="model_id" ref="model_pos_payment_method"/>
+            <field name="domain_force">['|', ('shop_id', '=', False), ('shop_id.cashier_ids', 'in', user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_cashier'))]" />
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- POS Session Security Rules -->
+        <record id="pos_session_shop_owner_rule" model="ir.rule">
+            <field name="name">POS Session - Shop Owner Access</field>
+            <field name="model_id" ref="model_pos_session"/>
+            <field name="domain_force">[('shop_id.owner_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_owner'))]" />
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+        
+        <record id="pos_session_shop_manager_rule" model="ir.rule">
+            <field name="name">POS Session - Shop Manager Access</field>
+            <field name="model_id" ref="model_pos_session"/>
+            <field name="domain_force">[('shop_id.manager_ids', 'in', user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_manager'))]" />
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <record id="pos_session_shop_cashier_rule" model="ir.rule">
+            <field name="name">POS Session - Shop Cashier Access</field>
+            <field name="model_id" ref="model_pos_session"/>
+            <field name="domain_force">['|', ('shop_id.cashier_ids', 'in', user.id), ('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('pos_shop_core.group_pos_shop_cashier'))]" />
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+    </data>
+</odoo>

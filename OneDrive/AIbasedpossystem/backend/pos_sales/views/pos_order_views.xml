@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- POS Order Form View -->
+        <record id="view_pos_order_form" model="ir.ui.view">
+            <field name="name">pos.order.form</field>
+            <field name="model">pos.order</field>
+            <field name="arch" type="xml">
+                <form string="POS Order">
+                    <header>
+                        <button name="action_paid" string="Mark as Paid" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                        <button name="action_done" string="Mark as Done" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'not in', ['draft', 'paid'])]}"/>
+                        <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ['done', 'invoiced', 'cancel'])]}"/>
+                        <button name="action_create_invoice" string="Create Invoice" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', 'not in', ['paid', 'done']), ('invoice_state', '=', 'invoiced')]}"/>
+                        <button name="print_receipt" string="Print Receipt" type="object" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,paid,done,invoiced"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_invoice" type="object" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible': [('invoice_state', '!=', 'invoiced')]}">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_text">Invoice</span>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="shop_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="session_id" domain="[('shop_id', '=', shop_id), ('state', '=', 'opened')]" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="user_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="date_order" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="partner_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="partner_shipping_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="receipt_number" attrs="{'readonly': True}"/>
+                                <field name="pos_reference" attrs="{'readonly': True}"/>
+                                <field name="external_id" attrs="{'readonly': True}"/>
+                                <field name="invoice_state" invisible="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Order Lines" name="order_lines">
+                                <field name="lines" attrs="{'readonly': [('state', '!=', 'draft')]}">
+                                    <tree string="Order Lines" editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="product_id" options="{'no_create': True}"/>
+                                        <field name="name"/>
+                                        <field name="qty"/>
+                                        <field name="uom_id" groups="uom.group_uom"/>
+                                        <field name="price_unit" widget="monetary"/>
+                                        <field name="discount" widget="percentage"/>
+                                        <field name="tax_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                                        <field name="price_subtotal" widget="monetary"/>
+                                        <field name="price_subtotal_incl" widget="monetary"/>
+                                    </tree>
+                                    <form string="Order Line">
+                                        <group>
+                                            <group>
+                                                <field name="product_id" options="{'no_create': True}"/>
+                                                <field name="name"/>
+                                                <field name="qty"/>
+                                                <field name="uom_id" groups="uom.group_uom"/>
+                                            </group>
+                                            <group>
+                                                <field name="price_unit" widget="monetary"/>
+                                                <field name="discount" widget="percentage"/>
+                                                <field name="tax_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                                                <field name="price_subtotal" widget="monetary"/>
+                                                <field name="price_subtotal_incl" widget="monetary"/>
+                                            </group>
+                                        </group>
+                                        <group>
+                                            <field name="note" placeholder="Add a note here..."/>
+                                        </group>
+                                    </form>
+                                </field>
+                                <group class="oe_subtotal_footer oe_right">
+                                    <field name="amount_tax" widget="monetary"/>
+                                    <div class="oe_subtotal_footer_separator oe_inline">
+                                        <label for="amount_total"/>
+                                    </div>
+                                    <field name="amount_total" class="oe_subtotal_footer_separator" widget="monetary"/>
+                                </group>
+                                <div class="oe_clear"/>
+                            </page>
+                            <page string="Payments" name="payments">
+                                <field name="payment_ids" attrs="{'readonly': [('state', '=', 'cancel')]}">
+                                    <tree string="Payments" editable="bottom">
+                                        <field name="payment_method_id" options="{'no_create': True}"/>
+                                        <field name="amount" widget="monetary"/>
+                                        <field name="payment_date"/>
+                                        <field name="payment_status"/>
+                                        <field name="transaction_id"/>
+                                        <field name="is_change"/>
+                                    </tree>
+                                    <form string="Payment">
+                                        <group>
+                                            <group>
+                                                <field name="payment_method_id" options="{'no_create': True}"/>
+                                                <field name="amount" widget="monetary"/>
+                                                <field name="payment_date"/>
+                                            </group>
+                                            <group>
+                                                <field name="payment_status"/>
+                                                <field name="transaction_id"/>
+                                                <field name="card_type"/>
+                                                <field name="cardholder_name"/>
+                                                <field name="is_change"/>
+                                            </group>
+                                        </group>
+                                        <group>
+                                            <field name="note" placeholder="Add a note here..."/>
+                                        </group>
+                                    </form>
+                                </field>
+                                <group class="oe_subtotal_footer oe_right">
+                                    <field name="amount_paid" widget="monetary"/>
+                                    <field name="amount_return" widget="monetary"/>
+                                    <div class="oe_subtotal_footer_separator oe_inline">
+                                        <label for="amount_total"/>
+                                    </div>
+                                    <field name="amount_total" class="oe_subtotal_footer_separator" widget="monetary"/>
+                                </group>
+                                <div class="oe_clear"/>
+                            </page>
+                            <page string="Notes" name="notes">
+                                <field name="note" placeholder="Add internal notes here..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        
+        <!-- POS Order Tree View -->
+        <record id="view_pos_order_tree" model="ir.ui.view">
+            <field name="name">pos.order.tree</field>
+            <field name="model">pos.order</field>
+            <field name="arch" type="xml">
+                <tree string="POS Orders" decoration-info="state == 'draft'" decoration-muted="state == 'cancel'" decoration-success="state == 'done' or state == 'invoiced'">
+                    <field name="name"/>
+                    <field name="date_order"/>
+                    <field name="shop_id"/>
+                    <field name="session_id"/>
+                    <field name="user_id"/>
+                    <field name="partner_id"/>
+                    <field name="amount_total" sum="Total" widget="monetary"/>
+                    <field name="amount_paid" sum="Paid" widget="monetary"/>
+                    <field name="state"/>
+                    <field name="invoice_state"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- POS Order Search View -->
+        <record id="view_pos_order_search" model="ir.ui.view">
+            <field name="name">pos.order.search</field>
+            <field name="model">pos.order</field>
+            <field name="arch" type="xml">
+                <search string="Search POS Orders">
+                    <field name="name" string="Order"/>
+                    <field name="date_order"/>
+                    <field name="shop_id"/>
+                    <field name="user_id"/>
+                    <field name="partner_id"/>
+                    <field name="receipt_number"/>
+                    <field name="pos_reference"/>
+                    <field name="external_id"/>
+                    <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Paid" name="paid" domain="[('state', '=', 'paid')]"/>
+                    <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
+                    <filter string="Invoiced" name="invoiced" domain="[('state', '=', 'invoiced')]"/>
+                    <filter string="Cancelled" name="cancelled" domain="[('state', '=', 'cancel')]"/>
+                    <filter string="Not Invoiced" name="not_invoiced" domain="[('invoice_state', '=', 'no')]"/>
+                    <filter string="Today" name="today" domain="[('date_order', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0))), ('date_order', '&lt;=', datetime.datetime.combine(context_today(), datetime.time(23,59,59)))]"/>
+                    <filter string="This Week" name="this_week" domain="[('date_order', '&gt;=', (context_today() + relativedelta(weeks=-1, days=1, weekday=0)).strftime('%Y-%m-%d')), ('date_order', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d'))]"/>
+                    <filter string="This Month" name="this_month" domain="[('date_order', '&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')), ('date_order', '&lt;=', (context_today() + relativedelta(months=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Shop" name="shop" domain="[]" context="{'group_by': 'shop_id'}"/>
+                        <filter string="Session" name="session" domain="[]" context="{'group_by': 'session_id'}"/>
+                        <filter string="Salesperson" name="user" domain="[]" context="{'group_by': 'user_id'}"/>
+                        <filter string="Customer" name="customer" domain="[]" context="{'group_by': 'partner_id'}"/>
+                        <filter string="Status" name="status" domain="[]" context="{'group_by': 'state'}"/>
+                        <filter string="Order Date" name="order_date" domain="[]" context="{'group_by': 'date_order:day'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        <!-- POS Order Calendar View -->
+        <record id="view_pos_order_calendar" model="ir.ui.view">
+            <field name="name">pos.order.calendar</field>
+            <field name="model">pos.order</field>
+            <field name="arch" type="xml">
+                <calendar string="POS Orders" date_start="date_order" color="shop_id">
+                    <field name="name"/>
+                    <field name="amount_total"/>
+                    <field name="state"/>
+                </calendar>
+            </field>
+        </record>
+        
+        <!-- POS Order Pivot View -->
+        <record id="view_pos_order_pivot" model="ir.ui.view">
+            <field name="name">pos.order.pivot</field>
+            <field name="model">pos.order</field>
+            <field name="arch" type="xml">
+                <pivot string="POS Orders Analysis">
+                    <field name="date_order" type="row" interval="day"/>
+                    <field name="shop_id" type="col"/>
+                    <field name="amount_total" type="measure" widget="monetary"/>
+                    <field name="amount_tax" type="measure" widget="monetary"/>
+                </pivot>
+            </field>
+        </record>
+        
+        <!-- POS Order Graph View -->
+        <record id="view_pos_order_graph" model="ir.ui.view">
+            <field name="name">pos.order.graph</field>
+            <field name="model">pos.order</field>
+            <field name="arch" type="xml">
+                <graph string="POS Orders" type="bar">
+                    <field name="shop_id"/>
+                    <field name="amount_total" type="measure"/>
+                </graph>
+            </field>
+        </record>
+        
+        <!-- POS Order Action -->
+        <record id="action_pos_order" model="ir.actions.act_window">
+            <field name="name">POS Orders</field>
+            <field name="res_model">pos.order</field>
+            <field name="view_mode">tree,form,calendar,pivot,graph</field>
+            <field name="search_view_id" ref="view_pos_order_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new POS Order
+                </p>
+                <p>
+                    Create a new POS order to record sales transactions.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

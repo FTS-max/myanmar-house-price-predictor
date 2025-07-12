@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import React from 'react';
+import React, { useId } from 'react';
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -12,7 +12,8 @@ export interface InputProps
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, error, label, helperText, id, ...props }, ref) => {
-    const inputId = id || `input-${Math.random().toString(36).substring(2, 9)}`;
+    const reactId = useId();
+    const inputId = id || reactId;
     
     return (
       <div className="w-full">

@@ -1,6 +1,6 @@
 'use client';
 
-import { PredictionResult, ComparableProperty } from '@/lib/api';
+import { PredictionResult } from '@/lib/api';
 import { formatCurrency } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -26,50 +26,20 @@ export function PredictionResultDisplay({ result }: PredictionResultProps) {
             </div>
             
             <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              Prediction confidence: {result.confidenceScore}%
+              Prediction confidence: {result.accuracy}%
             </div>
             
             <div className="mt-4 w-full max-w-md bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
               <div 
                 className="bg-primary h-2.5 rounded-full" 
-                style={{ width: `${result.confidenceScore}%` }}
+                style={{ width: `${result.accuracy}%` }}
               ></div>
             </div>
           </div>
         </CardContent>
       </Card>
       
-      {result.priceRange && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Price Range</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between items-center">
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Minimum</div>
-                <div className="text-xl font-semibold">{formatCurrency(result.priceRange.min)}</div>
-              </div>
-              
-              <div className="h-0.5 flex-1 bg-gray-200 dark:bg-gray-700 mx-4 relative">
-                <div 
-                  className="absolute -top-1 w-2 h-2 bg-primary rounded-full"
-                  style={{ 
-                    left: `${((result.predictedPrice - result.priceRange.min) / 
-                    (result.priceRange.max - result.priceRange.min)) * 100}%`,
-                    transform: 'translateX(-50%)'
-                  }}
-                ></div>
-              </div>
-              
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Maximum</div>
-                <div className="text-xl font-semibold">{formatCurrency(result.priceRange.max)}</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      
       
       {result.comparableProperties && result.comparableProperties.length > 0 && (
         <Card>
@@ -96,11 +66,11 @@ export function PredictionResultDisplay({ result }: PredictionResultProps) {
                     <TableCell>{formatCurrency(property.price)}</TableCell>
                     <TableCell>
                       <div className="flex items-center">
-                        <span className="mr-2">{property.similarityScore}%</span>
+                        <span className="mr-2">{property.similarity}%</span>
                         <div className="w-16 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
                           <div 
                             className="bg-primary h-1.5 rounded-full" 
-                            style={{ width: `${property.similarityScore}%` }}
+                            style={{ width: `${property.similarity}%` }}
                           ></div>
                         </div>
                       </div>
@@ -113,33 +83,7 @@ export function PredictionResultDisplay({ result }: PredictionResultProps) {
         </Card>
       )}
       
-      {result.factors && result.factors.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Key Price Factors</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {result.factors.map((factor, index) => (
-                <div key={index} className="flex items-center">
-                  <div className="w-32 text-sm text-gray-500 dark:text-gray-400">{factor.name}</div>
-                  <div className="flex-1">
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                      <div 
-                        className="bg-primary h-2 rounded-full" 
-                        style={{ width: `${Math.abs(factor.impact * 100)}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                  <div className="w-20 text-right text-sm font-medium">
-                    {factor.impact > 0 ? '+' : ''}{(factor.impact * 100).toFixed(1)}%
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      
     </div>
   );
 }

@@ -56,7 +56,7 @@ export interface ModelPerformance {
 }
 
 // API base URL - can be configured based on environment
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
 /**
  * Predict house price based on property details
@@ -109,18 +109,45 @@ export async function batchPredict(file: File): Promise<PredictionResult[]> {
 /**
  * Get market analysis data
  */
-export async function getMarketAnalysis(): Promise<{
+export async function getMarketAnalysis(
+  timeRange: string,
+  propertyType: string
+): Promise<{
   trends: MarketTrend[];
   areaComparison: AreaPricing[];
+  priceDistribution: { range: string; count: number }[];
+  growthByType: { type: string; growth: number }[];
 }> {
   try {
-    const response = await fetch(`${API_BASE_URL}/market-analysis`);
+    const response = await fetch(`${API_BASE_URL}/market/analysis`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        location: {
+          city: "Yangon",
+          township: "All"
+        },
+        property_type: propertyType === 'all' ? null : propertyType,
+        time_period_months: parseInt(timeRange.replace('m', '').replace('y', '')) * (timeRange.includes('y') ? 12 : 1)
+      }),
+    });
     
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);
     }
     
-    return await response.json();
+    const data = await response.json();
+    // The backend response does not match the frontend's expected format.
+    // This is a temporary mapping to avoid breaking the UI.
+    // This should be fixed in the backend or the frontend component should be updated.
+    return {
+      trends: data.price_trends?.history || [],
+      areaComparison: data.location_summary?.area_comparison || [],
+      priceDistribution: data.price_distribution?.distribution || [],
+      growthByType: data.market_activity?.by_type || [],
+    };
   } catch (error) {
     console.error('Failed to fetch market analysis:', error);
     throw error;

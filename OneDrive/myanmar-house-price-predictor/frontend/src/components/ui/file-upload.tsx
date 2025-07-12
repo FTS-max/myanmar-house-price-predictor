@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useId } from 'react';
 
 export interface FileUploadProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'onChange'> {
   accept?: string;
@@ -27,7 +27,8 @@ export function FileUpload({
   const [fileError, setFileError] = useState<string | undefined>(error);
   const [fileName, setFileName] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const uploadId = id || `upload-${Math.random().toString(36).substring(2, 9)}`;
+  const reactId = useId();
+  const uploadId = id || reactId;
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();

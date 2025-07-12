@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import React from 'react';
+import React, { useId } from 'react';
 
 export interface SelectOption {
   value: string;
@@ -19,7 +19,8 @@ export interface SelectProps
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, options, error, label, helperText, id, onChange, ...props }, ref) => {
-    const selectId = id || `select-${Math.random().toString(36).substring(2, 9)}`;
+    const reactId = useId();
+    const selectId = id || reactId;
     
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       if (onChange) {

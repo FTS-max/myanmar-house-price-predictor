@@ -41,12 +41,18 @@ export function BatchPrediction() {
     setError('');
     
     try {
-      // Read the file content
-      const fileContent = await readFileAsText(file);
-      
-      // Send to API
-      const results = await batchPredict(fileContent);
-      setResults(results);
+      const results = await batchPredict(file);
+      const formattedResults = results.map((result, index) => ({
+        ...result,
+        id: `result-${index}`,
+        location: 'N/A',
+        propertyType: 'N/A',
+        size: 0,
+        bedrooms: 0,
+        bathrooms: 0,
+        confidenceScore: result.accuracy * 100,
+      }));
+      setResults(formattedResults);
     } catch (err) {
       console.error('Error processing batch prediction:', err);
       setError('Failed to process the CSV file. Please check the format and try again.');
@@ -55,20 +61,7 @@ export function BatchPrediction() {
     }
   };
   
-  const readFileAsText = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          resolve(event.target.result as string);
-        } else {
-          reject(new Error('Failed to read file'));
-        }
-      };
-      reader.onerror = () => reject(reader.error);
-      reader.readAsText(file);
-    });
-  };
+  
   
   const downloadResults = () => {
     if (!results.length) return;
@@ -116,8 +109,8 @@ export function BatchPrediction() {
             <FileUpload
               accept=".csv"
               maxSize={5 * 1024 * 1024} // 5MB
-              onFileChange={handleFileChange}
-              currentFile={file}
+              onChange={handleFileChange}
+              
             />
             
             {error && (

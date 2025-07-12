@@ -1,6 +1,6 @@
 'use client';
 
-import { PropertyDetails, predictPrice } from '@/lib/api';
+import { PropertyDetails, predictPrice, PredictionResult } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -32,7 +32,7 @@ const amenities = [
 ];
 
 interface PredictionFormProps {
-  onPredictionResult?: (result: any) => void;
+  onPredictionResult?: (result: PredictionResult) => void;
 }
 
 export function PredictionForm({ onPredictionResult }: PredictionFormProps) {

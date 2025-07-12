@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select } from '@/components/ui/select';
-import { Chart } from '@/components/ui/chart';
+import { LineChart, BarChart } from '@/components/ui/chart';
 import { formatCurrency, formatPercentage } from '@/lib/utils';
 import { getMarketAnalysis, MarketTrend, AreaPricing } from '@/lib/api';
 
@@ -40,7 +40,12 @@ export function MarketAnalysis() {
       setIsLoading(true);
       try {
         const data = await getMarketAnalysis(timeRange, propertyType);
-        setMarketData(data);
+        setMarketData({
+          trends: data.trends,
+          hotAreas: data.areaComparison,
+          priceDistribution: data.priceDistribution,
+          growthByType: data.growthByType,
+        });
       } catch (error) {
         console.error('Error fetching market data:', error);
       } finally {
@@ -106,16 +111,9 @@ export function MarketAnalysis() {
               </CardHeader>
               <CardContent>
                 <div className="h-64">
-                  <Chart
-                    type="line"
-                    data={{
-                      labels: marketData.trends.map(trend => trend.date),
-                      datasets: [{
-                        label: 'Average Price',
-                        data: marketData.trends.map(trend => trend.averagePrice),
-                        color: '#3b82f6'
-                      }]
-                    }}
+                  <LineChart
+                    data={marketData.trends.map(trend => ({ label: trend.period, value: trend.averagePrice }))}
+                    lineColor="#3b82f6"
                   />
                 </div>
                 <div className="mt-4 grid grid-cols-2 gap-4">
@@ -139,16 +137,9 @@ export function MarketAnalysis() {
               </CardHeader>
               <CardContent>
                 <div className="h-64">
-                  <Chart
-                    type="bar"
-                    data={{
-                      labels: marketData.priceDistribution.map(item => item.range),
-                      datasets: [{
-                        label: 'Number of Properties',
-                        data: marketData.priceDistribution.map(item => item.count),
-                        color: '#8b5cf6'
-                      }]
-                    }}
+                  <BarChart
+                    data={marketData.priceDistribution.map(item => ({ label: item.range, value: item.count }))}
+                    barColor="#8b5cf6"
                   />
                 </div>
               </CardContent>
@@ -164,9 +155,7 @@ export function MarketAnalysis() {
                     <div key={index} className="flex justify-between items-center">
                       <div>
                         <p className="font-medium">{area.area}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {formatPercentage(area.growthRate / 100)} growth
-                        </p>
+                        
                       </div>
                       <div className="text-right">
                         <p className="font-semibold">{formatCurrency(area.averagePrice)}</p>
@@ -186,16 +175,9 @@ export function MarketAnalysis() {
               </CardHeader>
               <CardContent>
                 <div className="h-64">
-                  <Chart
-                    type="bar"
-                    data={{
-                      labels: marketData.growthByType.map(item => item.type),
-                      datasets: [{
-                        label: 'Growth Rate',
-                        data: marketData.growthByType.map(item => item.growth),
-                        color: '#ec4899'
-                      }]
-                    }}
+                  <BarChart
+                    data={marketData.growthByType.map(item => ({ label: item.type, value: item.growth }))}
+                    barColor="#ec4899"
                   />
                 </div>
               </CardContent>

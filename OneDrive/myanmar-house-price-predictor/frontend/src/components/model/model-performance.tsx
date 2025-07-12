@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PieChart } from '@/components/ui/chart';
+import { BarChart } from '@/components/ui/chart';
 import { formatPercentage } from '@/lib/utils';
 import { getModelPerformance, ModelPerformance } from '@/lib/api';
 
@@ -61,13 +61,7 @@ export function ModelPerformanceDisplay() {
           color="text-purple-500"
         />
         
-        <MetricCard 
-          title="Mean Squared Error" 
-          value={performanceData.meanSquaredError} 
-          description="Average squared difference" 
-          format="number"
-          color="text-pink-500"
-        />
+        
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -77,118 +71,20 @@ export function ModelPerformanceDisplay() {
           </CardHeader>
           <CardContent>
             <div className="h-80">
-              <Chart
-                type="bar"
-                data={{
-                  labels: performanceData.featureImportance.map(feature => feature.name),
-                  datasets: [{
-                    label: 'Importance',
-                    data: performanceData.featureImportance.map(feature => feature.importance),
-                    color: '#3b82f6'
-                  }]
-                }}
-                options={{ horizontal: true }}
+              <BarChart
+                data={performanceData.featureImportance.map(feature => ({ label: feature.feature, value: feature.importance }))}
+                barColor="#3b82f6"
               />
             </div>
           </CardContent>
         </Card>
         
-        <Card>
-          <CardHeader>
-            <CardTitle>Prediction vs Actual</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-80">
-              <Chart
-                type="scatter"
-                data={{
-                  labels: performanceData.predictionVsActual.map((_, i) => `Point ${i + 1}`),
-                  datasets: [{
-                    label: 'Predictions',
-                    data: performanceData.predictionVsActual.map(point => ({ 
-                      x: point.actual, 
-                      y: point.predicted 
-                    })),
-                    color: '#10b981'
-                  }]
-                }}
-              />
-            </div>
-          </CardContent>
-        </Card>
+        
       </div>
       
-      <Card>
-        <CardHeader>
-          <CardTitle>Error Distribution</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-64">
-            <Chart
-              type="bar"
-              data={{
-                labels: performanceData.errorDistribution.map(bin => bin.range),
-                datasets: [{
-                  label: 'Count',
-                  data: performanceData.errorDistribution.map(bin => bin.count),
-                  color: '#f59e0b'
-                }]
-              }}
-            />
-          </div>
-        </CardContent>
-      </Card>
       
-      <Card>
-        <CardHeader>
-          <CardTitle>Cross Validation Results</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead>
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fold</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">R² Score</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">MAE</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">MSE</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {performanceData.crossValidation.map((fold, index) => (
-                  <tr key={index}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">Fold {index + 1}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{formatPercentage(fold.r2Score)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{fold.meanAbsoluteError.toLocaleString()}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{fold.meanSquaredError.toLocaleString()}</td>
-                  </tr>
-                ))}
-                <tr className="bg-gray-50 dark:bg-gray-800">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">Average</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    {formatPercentage(
-                      performanceData.crossValidation.reduce((sum, fold) => sum + fold.r2Score, 0) / 
-                      performanceData.crossValidation.length
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    {(
-                      performanceData.crossValidation.reduce((sum, fold) => sum + fold.meanAbsoluteError, 0) / 
-                      performanceData.crossValidation.length
-                    ).toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    {(
-                      performanceData.crossValidation.reduce((sum, fold) => sum + fold.meanSquaredError, 0) / 
-                      performanceData.crossValidation.length
-                    ).toLocaleString()}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+      
+      
     </div>
   );
 }
